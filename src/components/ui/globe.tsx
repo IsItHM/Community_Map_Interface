@@ -337,19 +337,24 @@
 // }
 
 "use client";
+
 import { useEffect, useRef, useState } from "react";
 import { Color, Scene, Fog, PerspectiveCamera, Vector3 } from "three";
 import ThreeGlobe from "three-globe";
 import { useThree, Object3DNode, Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import countries from "@/data/globe.json";
+
 declare module "@react-three/fiber" {
   interface ThreeElements {
     threeGlobe: Object3DNode<ThreeGlobe, typeof ThreeGlobe>;
   }
 }
 
-extend({ ThreeGlobe });
+// Only extend if we're on the client side
+if (typeof window !== 'undefined') {
+  extend({ ThreeGlobe });
+}
 
 const RING_PROPAGATION_SPEED = 3;
 const aspect = 1.2;
@@ -458,10 +463,9 @@ export function Globe({ globeConfig, data }: WorldProps) {
       const arc = arcs[i];
       const rgb = hexToRgb(arc.color) as { r: number; g: number; b: number } | null;
       
-      // Check if rgb is null
       if (!rgb) {
         console.error(`Invalid color for arc: ${arc.color}`);
-        continue; // Skip this arc if the color is invalid
+        continue;
       }
 
       points.push({
@@ -480,7 +484,6 @@ export function Globe({ globeConfig, data }: WorldProps) {
       });
     }
 
-    // Remove duplicates for same lat and lng
     const filteredPoints = points.filter(
       (v, i, a) =>
         a.findIndex((v2) =>
@@ -491,11 +494,10 @@ export function Globe({ globeConfig, data }: WorldProps) {
     );
 
     setGlobeData(filteredPoints);
-};
-
+  };
 
   useEffect(() => {
-    if (globeRef.current && globeData) {
+    if (typeof window !== 'undefined' && globeRef.current && globeData) {
       globeRef.current
         .hexPolygonsData(countries.features)
         .hexPolygonResolution(3)
@@ -580,9 +582,11 @@ export function WebGLRendererConfig() {
   const { gl, size } = useThree();
 
   useEffect(() => {
-    gl.setPixelRatio(window.devicePixelRatio);
-    gl.setSize(size.width, size.height);
-    gl.setClearColor(0xffaaff, 0);
+    if (typeof window !== 'undefined') {
+      gl.setPixelRatio(window.devicePixelRatio);
+      gl.setSize(size.width, size.height);
+      gl.setClearColor(0xffaaff, 0);
+    }
   }, []);
 
   return null;
@@ -590,8 +594,19 @@ export function WebGLRendererConfig() {
 
 export function World(props: WorldProps) {
   const { globeConfig } = props;
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return null; // or a loading spinner, or a simplified version of your component
+  }
+
   const scene = new Scene();
   scene.fog = new Fog(0xffffff, 400, 2000);
+
   return (
     <Canvas scene={scene} camera={new PerspectiveCamera(50, aspect, 180, 1800)}>
       <WebGLRendererConfig />
