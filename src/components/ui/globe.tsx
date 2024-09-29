@@ -336,7 +336,6 @@
 //   return arr;
 // }
 
-
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Color, Scene, Fog, PerspectiveCamera, Vector3 } from "three";
@@ -344,7 +343,6 @@ import ThreeGlobe from "three-globe";
 import { useThree, Object3DNode, Canvas, extend } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import countries from "@/data/globe.json";
-
 declare module "@react-three/fiber" {
   interface ThreeElements {
     threeGlobe: Object3DNode<ThreeGlobe, typeof ThreeGlobe>;
@@ -458,27 +456,31 @@ export function Globe({ globeConfig, data }: WorldProps) {
     let points = [];
     for (let i = 0; i < arcs.length; i++) {
       const arc = arcs[i];
-      const rgb = hexToRgb(arc.color);
-      const colorString = rgb 
-        ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ` 
-        : `rgba(255, 255, 255, `; // Fallback to white if hexToRgb returns null
+      const rgb = hexToRgb(arc.color) as { r: number; g: number; b: number } | null;
+      
+      // Check if rgb is null
+      if (!rgb) {
+        console.error(`Invalid color for arc: ${arc.color}`);
+        continue; // Skip this arc if the color is invalid
+      }
+
       points.push({
         size: defaultProps.pointSize,
         order: arc.order,
-        color: (t: number) => `${colorString}${1 - t})`,
+        color: (t: number) => `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${1 - t})`,
         lat: arc.startLat,
         lng: arc.startLng,
       });
       points.push({
         size: defaultProps.pointSize,
         order: arc.order,
-        color: (t: number) => `${colorString}${1 - t})`,
+        color: (t: number) => `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${1 - t})`,
         lat: arc.endLat,
         lng: arc.endLng,
       });
     }
 
-    // remove duplicates for same lat and lng
+    // Remove duplicates for same lat and lng
     const filteredPoints = points.filter(
       (v, i, a) =>
         a.findIndex((v2) =>
@@ -489,7 +491,8 @@ export function Globe({ globeConfig, data }: WorldProps) {
     );
 
     setGlobeData(filteredPoints);
-  };
+};
+
 
   useEffect(() => {
     if (globeRef.current && globeData) {
@@ -536,7 +539,7 @@ export function Globe({ globeConfig, data }: WorldProps) {
       .pointRadius(2);
 
     globeRef.current
-      .ringsData([]) 
+      .ringsData([])
       .ringColor((e: any) => (t: any) => e.color(t))
       .ringMaxRadius(defaultProps.maxRings)
       .ringPropagationSpeed(RING_PROPAGATION_SPEED)
@@ -577,12 +580,10 @@ export function WebGLRendererConfig() {
   const { gl, size } = useThree();
 
   useEffect(() => {
-    if (typeof window !== 'undefined') { // Check if running in client
-      gl.setPixelRatio(window.devicePixelRatio);
-      gl.setSize(size.width, size.height);
-      gl.setClearColor(0xffaaff, 0);
-    }
-  }, [gl, size]);
+    gl.setPixelRatio(window.devicePixelRatio);
+    gl.setSize(size.width, size.height);
+    gl.setClearColor(0xffaaff, 0);
+  }, []);
 
   return null;
 }
@@ -624,7 +625,6 @@ export function World(props: WorldProps) {
 }
 
 export function hexToRgb(hex: string) {
-  if (!hex) return null; // Add this check to handle undefined or empty strings
   var shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   hex = hex.replace(shorthandRegex, function (m, r, g, b) {
     return r + r + g + g + b + b;
