@@ -14,7 +14,7 @@ export default function Navbar({ className }: { className?: string }) {
         >
             <Menu setActive={setActive}>
                 <Link href={"/"}>Home</Link>
-                <Link href={"/"}>Maps</Link>
+                <Link href={"https://partho-majumdar.github.io/spacex-map/"}>Maps</Link>
                 <Link href={"/analysis"}>Analysis</Link>
                 <Link href={"/resource"}>Resource</Link>
                 <Link href={"/about"}>About</Link>

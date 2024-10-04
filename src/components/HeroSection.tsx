@@ -42,15 +42,15 @@ export default function HeroSection() {
       </div>
       
       <div className="p-4 relative z-20 w-full text-center">
-        <h1 className="text-4xl md:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 leading-tight md:leading-relaxed">
-          Flood Risk Mapping With Open Data
+        <h1 className="text-4xl md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400 leading-tight md:leading-relaxed">
+          A map for the community, By the community
         </h1>
 
         <p className="mt-2 font-normal text-base md:text-lg text-neutral-300 max-w-lg mx-auto">
-          Explore an interactive map that reveals flood risks in our community, using open-source data to uncover powerful insights about how local geography shapes flood patterns. Understand the impact of these risks and discover actionable strategies for building a more resilient future.
+          We are a group of critical thinkers and problem solvers exploring why many members of our community are leaving the country, often with family support. To tackle this issue, we're creating a community-driven map to encourage residents to stay in their beloved hometown. Our goal is to foster collaboration and find solutions that benefit everyone. Together, we can strengthen our community and build a brighter future right here at home.
         </p>
         <div className="mt-8">
-          <Link href="/maps" className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
+          <Link href="https://partho-majumdar.github.io/spacex-map/" className="px-6 py-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
             Explore Maps
           </Link>
         </div>
